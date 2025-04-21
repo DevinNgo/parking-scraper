@@ -1,4 +1,5 @@
 from flask import Flask, jsonify
+from flask_cors import CORS
 from bs4 import BeautifulSoup
 import requests
 import threading
@@ -6,6 +7,8 @@ import time
 import os
 
 app = Flask(__name__)
+CORS(app)
+
 cached_data = []
 last_updated = None
 
