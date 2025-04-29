@@ -6,6 +6,9 @@ import threading
 import time
 import os
 
+from scraper import scrape_parking_data
+from model import prediction_model
+
 app = Flask(__name__)
 CORS(app)
 
