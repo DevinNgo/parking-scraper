@@ -1,10 +1,13 @@
-# Updated app.py (add predict endpoint)
-from flask import Flask, jsonify, request
-import threading, time, os
-from scraper import scrape_parking_data
-from model import prediction_model
+from flask import Flask, jsonify
+from flask_cors import CORS
+from bs4 import BeautifulSoup
+import requests
+import threading
+import time
+import os
 
 app = Flask(__name__)
+CORS(app)
 
 cached_data = []
 last_updated = None
