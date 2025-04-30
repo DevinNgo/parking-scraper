@@ -92,7 +92,7 @@ def prediction_model():
     y_train = train['current_struc_avail']
     model.fit(X_train, y_train)
 
-    times = pd.date_range("08:00", "20:00", freq="5min").time
+    times = pd.date_range("00:00", "23:55", freq="5min").time
 
     today = pd.to_datetime("today").normalize()
     structures = parking['structure'].unique()
