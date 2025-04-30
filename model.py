@@ -73,40 +73,33 @@ def prediction_model():
     # percentage full = (total_struc_avail - current_struc_avail)/total_struc_avail
     parking['percentage_full'] = (parking['total_struc_avail'] - parking['current_struc_avail']) / parking['total_struc_avail']
 
-    # a. define features
     cat_feats = ['structure', 'day_of_week', 'before_spring_break']
     num_feats = ['semester_week', 'half_hour']
 
-    # b. transformer
     preproc = ColumnTransformer([
     ('cat', OneHotEncoder(handle_unknown='ignore'), cat_feats),
     ('num', 'passthrough', num_feats)
     ])
 
-    # c. pipeline
     model = Pipeline([
     ('pre', preproc),
     ('reg', RandomForestRegressor(n_estimators=100, random_state=42))
     ])
 
-    # d. train–test split (hold out today)
     today = pd.to_datetime(datetime.now()).normalize()
     train = parking[parking['date'] < today]
     X_train = train[cat_feats + num_feats]
     y_train = train['current_struc_avail']
     model.fit(X_train, y_train)
 
-    # --- 1. build a list of 5-minute times ---
     times = pd.date_range("08:00", "20:00", freq="5min").time
 
-    # --- 2. all structures & constant features for “today” ---
     today = pd.to_datetime("today").normalize()
     structures = parking['structure'].unique()
     dow    = today.day_name()
     bsb    = today < pd.to_datetime('2025-03-31')
     sweek  = ((today - pd.to_datetime('2025-01-20')).days // 7) + 1
 
-    # --- 3. assemble predict‐rows ---
     rows = []
     for t in times:
         hh = t.hour + (t.minute >= 30)*0.5
@@ -121,16 +114,10 @@ def prediction_model():
             })
     pd_grid = pd.DataFrame(rows)
 
-    # --- 4. predict & round to int ---
     feat_cols = cat_feats + num_feats  # ['structure','day_of_week','before_spring_break','semester_week','half_hour']
     pd_grid['avail'] = model.predict(pd_grid[feat_cols]).round().astype(int)
 
-    # --- 5. pivot into the desired dict‐of‐dicts ---
     pivot = pd_grid.pivot(index='time', columns='structure', values='avail')
     forecast_dict = pivot.to_dict(orient='index')
 
     return forecast_dict
-
-
-
-
