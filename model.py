@@ -10,7 +10,7 @@ from sklearn.ensemble import RandomForestRegressor  # Random forest is better th
 def prediction_model():
     # Combine datasets and rename columns
     parking = pd.read_csv('https://raw.githubusercontent.com/NguyenJimmyT/webscraperSenior/refs/heads/main/parking_data.csv')
-    filler = pd.read_csv('https://raw.githubusercontent.com/NguyenJimmyT/webscraperSenior/refs/heads/main/Modified_Parking_Data__Higher_availability_near_8_PM_.csv')
+    filler = pd.read_csv('https://raw.githubusercontent.com/NguyenJimmyT/webscraperSenior/refs/heads/main/filler_data.csv')
 
     parking = pd.concat([parking, filler])
 
